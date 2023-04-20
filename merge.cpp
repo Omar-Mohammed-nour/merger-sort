@@ -1,88 +1,80 @@
 #include <iostream>
-#include <array>
+#include <vector>
 
-void merge(int* leftarr, int* rightarr, int* arr) {
-    //sizes
-    std::size_t length = sizeof(arr) / sizeof(*arr);
-    int leftlength = length / 2;
-    int rightlength = length - leftlength;// cux the right wants the leftover crumbs
+using namespace std;
+
+#define newline cout << "\n"
+
+void merge(vector<int> &arr, int l, int m, int r) {
+    int s1 = m - l + 1;
+    int s2 = r - m;
     
-    //indices
-    int i = 0, l = 0, r = 0; 
+    if (s1 <= 0 || s2 <= 0) {
+        return;
+    }
+
+    int* L = new int[s1];
+    int* R = new int[s2];
     
-    //sorting
-    while (l < middle && r < arrlength - middle) {
-        if (leftarr[l] < rightarr[r]) {
-            arr[i] = leftarr[l];
+    for (int i = 0; i < s1; i++) {
+        L[i] = arr[l + i];
+    }
+    for (int j = 0; j < s2; j++) {
+        R[j] = arr[m + 1 + j]; 
+    }
+
+    int i = 0, j = 0, k = l;
+
+    while (i < s1 && j < s2) {
+        if (L[i] <= R[j]) {
+            arr[k] = L[i];
             i++;
-            l++;
-        }
-        else {
-            arr[i] = rightarr[r];
-            i++;
-            r++;
-        }
-    }
-
-    while (l < leftlength) {
-        arr[i] = leftarr[l];
-        i++;
-        l++;
-    }
-
-    while (r < rightlength) {
-        arr[i] = rightarr[r];
-        i++;
-        r++;
-    }
-
-}
-
-void mergeSort(int arr[]) {
-    
-    std::size_t arrlength = sizeof(arr) / sizeof(*arr);
-    std::cout << arrlength;
-
-    if (arrlength <= 1) {return;}//base case (will bassically stop the function since this has recursion)
-
-    int middle = arrlength / 2;
-
-    int* leftarr = new int[middle];
-    int* rightarr = new int[arrlength - middle]; // the reason its not middle - lenght is because you cant get a negative number in arrays
-    
-    //int i = 0; for left sub array
-    int j = 0; //for right sub array
-
-    for (int i = 0; i < arrlength; i++) {
-        if (i < middle) {
-            leftarr[i] = arr[i];
-            //std::cout << arr[i];
-        }
-        else {
-            rightarr[j] = arr[i];
+        } else {
+            arr[k] = R[j];
             j++;
         }
+        k++;
     }
-    
-    mergeSort(leftarr);
-    mergeSort(rightarr);
-    merge(leftarr, rightarr, arr);
-    
-    delete[] leftarr;
-    delete[] rightarr;
 
+    while (i < s1) {
+        arr[k] = L[i];
+        i++;
+        k++;
+    }
+    while (j < s2) {
+        arr[k] = R[j];
+        j++;
+        k++;
+    }
+
+    delete[] L;
+    delete[] R;
 }
 
+void mergesort(vector<int> &arr, int l, int r) {
+    if (l < r) {
+        int m = l + (r - l) / 2;
+        
+        mergesort(arr, l, m);
 
-int main () {
-    
-    int mainarr[8] = {4, 2, 3, 1, 5 ,7 ,8 ,6};
-    mergeSort(mainarr);
+        mergesort(arr, m + 1, r);
 
-    for (int i = 0; i < 8; i++) {
-        std::cout << mainarr[i] << ' ';
+        merge(arr, l, m, r);
     }
-    
 }
 
+int main() {
+    vector<int> arr = {10, 7, 3, 1, 9, 7, 4, 3, 23, 16, 89, 63, 42, 75, 87, 94, 23, 57, 67, 98, 10, 36, 48, 79, 80, 91, 38, 67, 73, 54, 67, 24, 71, 84, 83, 92, 62, 56, 68, 58, 2, 46, 20, 32, 19, 56, 3, 9, 11, 15, 36, 29, 87, 16, 40, 54, 1, 19, 63, 35, 26, 57, 48, 63, 39, 50, 60, 7, 17, 70, 87, 99, 73, 71, 8, 20, 30, 84, 79, 78, 72, 91, 92, 41, 49, 45, 37, 51, 84, 69, 16, 68, 66, 58, 68, 8, 22, 18, 97, 40, 95, 12, 36, 38, 13, 36, 24, 80, 68, 5, 38, 18, 50, 43, 99, 88, 95, 39, 33, 43, 3, 17, 71, 93, 75, 53, 60, 93, 93, 31, 12, 5, 53, 35, 80, 26, 15, 83, 1, 0, 51};
+    int n = arr.size();
 
+    mergesort(arr, 0, n - 1);
+
+    cout << "Sorted array:" << endl;
+
+    for(int i = 0; i < n; i++) {
+        cout << arr[i] << " ";
+    }
+
+    return 0;
+
+}
